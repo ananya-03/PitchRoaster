@@ -1,9 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
+import dynamic from "next/dynamic"
+import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Flame, Sparkles } from "lucide-react"
+
+const ModeCharacter = dynamic(
+  () => import("@/components/mode-character").then((mod) => mod.ModeCharacter),
+  { ssr: false }
+)
 
 interface RoasterFormProps {
   onSubmit: (pitch: string, mode: "savage" | "nice") => void
@@ -23,7 +29,45 @@ export function RoasterForm({ onSubmit, isLoading }: RoasterFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-8">
+    <form onSubmit={handleSubmit} className="w-full space-y-6">
+      {/* 3D Character Display */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={mode}
+          initial={{ opacity: 0, scale: 0.8, rotateY: -90 }}
+          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+          exit={{ opacity: 0, scale: 0.8, rotateY: 90 }}
+          transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
+          className="glass-card rounded-3xl overflow-hidden border border-white/10"
+          style={{
+            boxShadow: mode === "savage" 
+              ? "0 0 60px rgba(255, 32, 96, 0.3), inset 0 0 30px rgba(255, 32, 96, 0.1)"
+              : "0 0 60px rgba(0, 255, 204, 0.3), inset 0 0 30px rgba(0, 255, 204, 0.1)"
+          }}
+        >
+          <ModeCharacter mode={mode} />
+          
+          {/* Mode Label */}
+          <motion.div 
+            className="text-center pb-4 -mt-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <span 
+              className={cn(
+                "text-xs font-bold uppercase tracking-[0.4em] font-mono px-4 py-1 rounded-full",
+                mode === "savage" 
+                  ? "text-neon-pink bg-neon-pink/10" 
+                  : "text-neon-cyan bg-neon-cyan/10"
+              )}
+            >
+              {mode === "savage" ? "DEMON MODE" : "ANGEL MODE"}
+            </span>
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+
       {/* Textarea Container */}
       <motion.div 
         className="space-y-3"
@@ -98,7 +142,7 @@ export function RoasterForm({ onSubmit, isLoading }: RoasterFormProps) {
             )}
             <span className="relative z-10 flex items-center gap-2">
               <Flame className="w-4 h-4" />
-              Savage
+              Demon
             </span>
           </motion.button>
           
@@ -123,7 +167,7 @@ export function RoasterForm({ onSubmit, isLoading }: RoasterFormProps) {
             )}
             <span className="relative z-10 flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
-              Nice
+              Angel
             </span>
           </motion.button>
         </motion.div>
@@ -194,8 +238,8 @@ export function RoasterForm({ onSubmit, isLoading }: RoasterFormProps) {
       >
         <p className="text-xs text-muted-foreground/50 font-mono">
           {mode === "savage" 
-            ? "[ WARNING: NO MERCY MODE ACTIVATED ]" 
-            : "[ CONSTRUCTIVE FEEDBACK MODE ]"
+            ? "[ WARNING: DEMON MODE - NO MERCY ]" 
+            : "[ ANGEL MODE - CONSTRUCTIVE VIBES ]"
           }
         </p>
       </motion.div>
