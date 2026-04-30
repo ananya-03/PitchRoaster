@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
-import { Float, MeshDistortMaterial, Sparkles, Text3D, Center } from "@react-three/drei"
+import { Float, MeshDistortMaterial, Sparkles, Text, Center } from "@react-three/drei"
 import * as THREE from "three"
 
 function Skull() {
@@ -141,21 +141,17 @@ function TextLogo() {
   return (
     <group ref={textRef} position={[0, -1.5, 0]}>
       <Center>
-        <Text3D
-          font="/fonts/Geist_Bold.json"
-          size={0.35}
-          height={0.1}
-          curveSegments={12}
+        <Text
+          font="/fonts/Geist-Bold.ttf"
+          fontSize={0.5}
+          color="#ff3296"
+          anchorX="center"
+          anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="#ff0066"
         >
           PITCH ROASTER
-          <meshStandardMaterial 
-            color="#ff3296" 
-            emissive="#ff3296" 
-            emissiveIntensity={0.5}
-            metalness={0.8}
-            roughness={0.2}
-          />
-        </Text3D>
+        </Text>
       </Center>
     </group>
   )
