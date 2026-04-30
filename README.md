@@ -71,3 +71,77 @@ OPENAI_API_KEY
 ```
 
 After deployment, test the same checklist above on the `.vercel.app` URL.
+
+## Connect With v0
+
+You can connect this project to v0 in three useful ways.
+
+### Option 1: Import This GitHub Repo Into v0
+
+Use this when you want v0 to read and edit the full app.
+
+1. Go to `https://v0.app`.
+2. Start a new chat.
+3. Click `+` in the prompt bar.
+4. Choose `Import from GitHub`.
+5. Select `ananya-03/PitchRoaster`.
+6. Ask v0 to make UI changes.
+7. v0 will create changes on its own branch.
+8. Open a PR back to `main` when you are ready.
+
+This is the simplest workflow for this repo.
+
+### Option 2: Pull a v0 Component Into This Codebase
+
+Use this when you generate one component in v0 and want to add it locally.
+
+From the project root:
+
+```bash
+pnpm dlx v0@latest init
+pnpm dlx v0@latest add <component-id>
+```
+
+You can get `<component-id>` from the v0 UI after generating a component.
+
+If v0 gives you an `Add to Codebase` command, run it from this directory:
+
+```bash
+pnpm dlx shadcn@latest add "https://v0.dev/chat/b/<project_id>?token=<token>"
+```
+
+### Option 3: Connect v0 as an MCP Plugin
+
+Use this when you want your coding agent or IDE to call v0 tools directly.
+
+1. Create a v0 API key at:
+
+```text
+https://v0.app/chat/settings/keys
+```
+
+2. Add it to your shell environment, not to Git:
+
+```bash
+export V0_API_KEY="your_v0_key_here"
+```
+
+3. Add this MCP config to the MCP settings used by your editor/agent:
+
+```json
+{
+  "mcpServers": {
+    "v0": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://mcp.v0.dev",
+        "--header",
+        "Authorization: Bearer ${V0_API_KEY}"
+      ]
+    }
+  }
+}
+```
+
+Do not commit `V0_API_KEY` or any other secret.

@@ -9,18 +9,18 @@ const requestSchema = z.object({
   mode: z.enum(["savage", "nice"]),
 })
 
+const MAX_PITCH_CHARS = 1200
+
 const prompts = {
-  savage: `You are a brutally honest Silicon Valley VC who has seen 10,000 pitches and is exhausted by all of them.
-Roast the pitch like a disappointed investor at demo day. Be specific, be savage, be funny.
-Point out exactly what's wrong: vague TAM claims, "Uber for X" thinking, obvious competition they ignored.
-End with exactly one genuine, actionable piece of advice.
-Keep it under 200 words.`,
-  nice: `You are a supportive but radically honest startup mentor. You want this founder to succeed,
-but you refuse to sugarcoat real problems. Give warm but direct feedback.
-Acknowledge what's genuinely good, then clearly name the 2-3 biggest risks.
-End with one concrete next step they should take this week.
-Keep it under 200 words.`,
+  savage: `You are a brutally honest Silicon Valley VC. Give a specific, funny critique in 90 words or fewer. Name the biggest flaw and end with one actionable fix.`,
+  nice: `You are a supportive but radically honest startup mentor. Give warm, direct feedback in 90 words or fewer. Name the top risk and one next step.`,
 } satisfies Record<"savage" | "nice", string>
+
+function truncateForModel(value: string) {
+  return value.length > MAX_PITCH_CHARS
+    ? `${value.slice(0, MAX_PITCH_CHARS)}\n\n[Pitch truncated to reduce API cost.]`
+    : value
+}
 
 export async function POST(req: Request) {
   if (!process.env.OPENAI_API_KEY) {
@@ -34,13 +34,14 @@ export async function POST(req: Request) {
   }
 
   const { pitch, mode } = parsed.data
+  const modelPitch = truncateForModel(pitch)
 
   const result = streamText({
     model: openai("gpt-5.4"),
     system: prompts[mode],
-    prompt: `Startup pitch:\n\n${pitch}`,
-    temperature: mode === "savage" ? 0.9 : 0.65,
-    maxOutputTokens: 500,
+    prompt: `Pitch:\n${modelPitch}`,
+    temperature: mode === "savage" ? 0.7 : 0.5,
+    maxOutputTokens: 180,
   })
 
   return result.toTextStreamResponse()

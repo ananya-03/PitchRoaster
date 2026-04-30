@@ -16,6 +16,14 @@ const requestSchema = z.object({
   roastText: z.string().trim().min(1).max(4000),
 })
 
+const MAX_SCORE_CONTEXT_CHARS = 900
+
+function truncateForModel(value: string) {
+  return value.length > MAX_SCORE_CONTEXT_CHARS
+    ? value.slice(0, MAX_SCORE_CONTEXT_CHARS)
+    : value
+}
+
 export async function POST(req: Request) {
   if (!process.env.OPENAI_API_KEY) {
     return Response.json({ error: "OPENAI_API_KEY is not configured." }, { status: 500 })
@@ -28,25 +36,19 @@ export async function POST(req: Request) {
   }
 
   const { pitch, roastText } = parsed.data
+  const modelPitch = truncateForModel(pitch)
+  const modelRoastText = truncateForModel(roastText)
 
   const { output } = await generateText({
     model: openai("gpt-5.4"),
     output: Output.object({ schema: scoresSchema }),
-    temperature: 0.2,
-    maxOutputTokens: 250,
-    prompt: `Score this startup pitch from 1 to 10.
+    temperature: 0,
+    maxOutputTokens: 80,
+    prompt: `Return only 1-10 integer scores. originality: novel. marketSize: big market. executionRisk: hard to build. cringeFactor: buzzword/embarrassing.
 
-Use these meanings:
-- originality: 10 is groundbreaking, 1 is completely derivative.
-- marketSize: 10 is massive, 1 is tiny.
-- executionRisk: 10 is extremely hard to build or scale, 1 is straightforward.
-- cringeFactor: 10 is painfully buzzword-heavy or embarrassing, 1 is credible and crisp.
+Pitch: ${modelPitch}
 
-Pitch:
-${pitch}
-
-Roast:
-${roastText}`,
+Roast: ${modelRoastText}`,
   })
 
   return Response.json(output)
