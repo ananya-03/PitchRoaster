@@ -145,3 +145,5 @@ export V0_API_KEY="your_v0_key_here"
 ```
 
 Do not commit `V0_API_KEY` or any other secret.
+
+Updated the UI to phonk!

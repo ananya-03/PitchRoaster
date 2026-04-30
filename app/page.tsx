@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { RoasterForm } from "@/components/roaster-form"
 import { StreamingText } from "@/components/streaming-text"
 import { ScoreCards } from "@/components/score-cards"
+import { PhonkBackground } from "@/components/phonk-background"
 import type { Scores } from "@/lib/roast"
 
 export default function Home() {
@@ -12,6 +14,15 @@ export default function Home() {
   const [isStreaming, setIsStreaming] = useState(false)
   const [scores, setScores] = useState<Scores | null>(null)
   const [showScores, setShowScores] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
+  }, [])
 
   const handleSubmit = useCallback(async (pitch: string, mode: "savage" | "nice") => {
     setIsLoading(true)
@@ -68,44 +79,126 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-4 py-12 sm:py-20">
+    <main className="min-h-screen bg-background relative overflow-hidden scanlines vhs-effect">
+      <PhonkBackground />
+      
+      {/* Cursor glow effect */}
+      <div 
+        className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 50, 150, 0.06), transparent 40%)`
+        }}
+      />
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 sm:py-20">
         {/* Header */}
-        <header className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground tracking-tight mb-4">
-            Pitch Roaster
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
-            Brutal honesty for founders who can handle the truth. 
-            Submit your pitch. Get destroyed.
-          </p>
-        </header>
+        <motion.header 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <motion.div
+            className="inline-block mb-4"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-pink via-neon-cyan to-neon-pink glitch-text">
+              PITCH ROASTER
+            </h1>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="relative"
+          >
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-lg mx-auto font-mono flicker">
+              {"// BRUTAL HONESTY FOR FOUNDERS WHO CAN HANDLE THE TRUTH"}
+            </p>
+            <p className="text-sm text-neon-pink/60 mt-2 uppercase tracking-[0.3em]">
+              Submit your pitch. Get destroyed.
+            </p>
+          </motion.div>
+
+          {/* Decorative elements */}
+          <motion.div 
+            className="flex justify-center gap-4 mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="w-2 h-2 rounded-full bg-neon-pink"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.5, 1, 0.5],
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  delay: i * 0.2,
+                }}
+              />
+            ))}
+          </motion.div>
+        </motion.header>
 
         {/* Form */}
-        <section className="mb-8">
+        <motion.section 
+          className="mb-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
           <RoasterForm onSubmit={handleSubmit} isLoading={isLoading} />
-        </section>
+        </motion.section>
 
         {/* Streaming Output */}
-        {(streamingText || isStreaming) && (
-          <section className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <StreamingText text={streamingText} isStreaming={isStreaming} />
-          </section>
-        )}
+        <AnimatePresence>
+          {(streamingText || isStreaming) && (
+            <motion.section 
+              className="mb-12"
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.5 }}
+            >
+              <StreamingText text={streamingText} isStreaming={isStreaming} />
+            </motion.section>
+          )}
+        </AnimatePresence>
 
         {/* Score Cards */}
-        {scores && (
-          <section className="mb-8">
-            <ScoreCards scores={scores} show={showScores} />
-          </section>
-        )}
+        <AnimatePresence>
+          {scores && (
+            <motion.section 
+              className="mb-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ScoreCards scores={scores} show={showScores} />
+            </motion.section>
+          )}
+        </AnimatePresence>
 
         {/* Footer */}
-        <footer className="mt-16 text-center">
-          <p className="text-xs text-muted-foreground">
-            Built for founders with thick skin. No feelings were considered in the making of this app.
-          </p>
-        </footer>
+        <motion.footer 
+          className="mt-20 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          <div className="glass-card inline-block px-6 py-3 rounded-full">
+            <p className="text-xs text-muted-foreground font-mono tracking-wider">
+              {"<NO_FEELINGS_CONSIDERED />"}
+            </p>
+          </div>
+        </motion.footer>
       </div>
     </main>
   )
