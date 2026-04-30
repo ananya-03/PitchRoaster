@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Pitch Roaster | Brutally Honest Startup Feedback',
-  description: 'Get your startup idea roasted. Brutal honesty for founders who can handle the truth.',
+  title: 'PITCH ROASTER | Brutally Honest Startup Feedback',
+  description: 'Get your startup idea roasted. Brutal honesty for founders who can handle the truth. No mercy mode activated.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -29,6 +29,10 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: '#ff3296',
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark bg-background">
-      <body className="font-sans antialiased bg-background">
+      <body className="font-sans antialiased bg-background overflow-x-hidden">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
