@@ -107,10 +107,20 @@ export default function Home() {
           <FloatingSkull />
           
           <motion.div
+            className="inline-block mb-4 -mt-4"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-neon-pink via-neon-cyan to-neon-pink glitch-text">
+              PITCH ROASTER
+            </h1>
+          </motion.div>
+          
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="relative -mt-4"
+            className="relative"
           >
             <p className="text-lg sm:text-xl text-muted-foreground max-w-lg mx-auto font-mono flicker">
               {"// BRUTAL HONESTY FOR FOUNDERS WHO CAN HANDLE THE TRUTH"}
