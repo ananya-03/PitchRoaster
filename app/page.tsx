@@ -1,12 +1,18 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { motion, AnimatePresence } from "framer-motion"
 import { RoasterForm } from "@/components/roaster-form"
 import { StreamingText } from "@/components/streaming-text"
 import { ScoreCards } from "@/components/score-cards"
 import { PhonkBackground } from "@/components/phonk-background"
 import type { Scores } from "@/lib/roast"
+
+const FloatingSkull = dynamic(
+  () => import("@/components/floating-skull").then((mod) => mod.FloatingSkull),
+  { ssr: false }
+)
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
@@ -91,15 +97,17 @@ export default function Home() {
       />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-12 sm:py-20">
-        {/* Header */}
+        {/* 3D Header with Skull */}
         <motion.header 
-          className="text-center mb-16"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
+          <FloatingSkull />
+          
           <motion.div
-            className="inline-block mb-4"
+            className="inline-block mb-4 -mt-4"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400 }}
           >
@@ -124,23 +132,23 @@ export default function Home() {
 
           {/* Decorative elements */}
           <motion.div 
-            className="flex justify-center gap-4 mt-8"
+            className="flex justify-center gap-4 mt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            {[...Array(5)].map((_, i) => (
+            {[...Array(7)].map((_, i) => (
               <motion.div
                 key={i}
                 className="w-2 h-2 rounded-full bg-neon-pink"
                 animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.5, 1, 0.5],
+                  scale: [1, 1.8, 1],
+                  opacity: [0.3, 1, 0.3],
                 }}
                 transition={{
-                  duration: 1.5,
+                  duration: 1.2,
                   repeat: Infinity,
-                  delay: i * 0.2,
+                  delay: i * 0.15,
                 }}
               />
             ))}
