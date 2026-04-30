@@ -4,7 +4,6 @@ import { useState, useCallback } from "react"
 import { RoasterForm } from "@/components/roaster-form"
 import { StreamingText } from "@/components/streaming-text"
 import { ScoreCards } from "@/components/score-cards"
-import { PermalinkBanner } from "@/components/permalink-banner"
 import type { Scores } from "@/lib/roast"
 
 export default function Home() {
@@ -13,8 +12,6 @@ export default function Home() {
   const [isStreaming, setIsStreaming] = useState(false)
   const [scores, setScores] = useState<Scores | null>(null)
   const [showScores, setShowScores] = useState(false)
-  const [roastId, setRoastId] = useState<string | null>(null)
-  const [showPermalink, setShowPermalink] = useState(false)
 
   const handleSubmit = useCallback(async (pitch: string, mode: "savage" | "nice") => {
     setIsLoading(true)
@@ -22,8 +19,6 @@ export default function Home() {
     setIsStreaming(true)
     setScores(null)
     setShowScores(false)
-    setShowPermalink(false)
-    setRoastId(null)
 
     try {
       const response = await fetch("/api/roast", {
@@ -62,23 +57,6 @@ export default function Home() {
       const generatedScores = (await scoresResponse.json()) as Scores
       setScores(generatedScores)
       setTimeout(() => setShowScores(true), 300)
-
-      const saveResponse = await fetch("/api/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pitch,
-          mode,
-          roastText: fullText,
-          scores: generatedScores,
-        }),
-      })
-
-      if (!saveResponse.ok) throw new Error("Failed to save roast")
-
-      const saved = (await saveResponse.json()) as { id: string; url: string }
-      setRoastId(saved.id)
-      setTimeout(() => setShowPermalink(true), 800)
 
     } catch (error) {
       console.error("[v0] Error during roast:", error)
@@ -121,11 +99,6 @@ export default function Home() {
             <ScoreCards scores={scores} show={showScores} />
           </section>
         )}
-
-        {/* Permalink */}
-        <section>
-          <PermalinkBanner show={showPermalink} roastId={roastId} />
-        </section>
 
         {/* Footer */}
         <footer className="mt-16 text-center">

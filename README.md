@@ -1,15 +1,14 @@
 # Pitch Roaster
 
-Startup pitch roaster built with Next.js App Router, Vercel AI SDK, OpenAI, and Vercel Blob.
+Startup pitch roaster built with Next.js App Router, Vercel AI SDK, and OpenAI.
 
-Paste a startup pitch, choose Savage or Nice mode, stream the AI roast, generate four score cards, save the result, and share it at `/r/[id]`.
+Paste a startup pitch, choose Savage or Nice mode, stream the AI roast, and generate four score cards.
 
 ## Requirements
 
 - Node.js 20+
 - pnpm
 - OpenAI API key
-- Vercel Blob read/write token
 
 ## Environment Variables
 
@@ -17,12 +16,9 @@ Create `.env.local`:
 
 ```bash
 OPENAI_API_KEY=sk-...
-BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
 ```
 
 `OPENAI_API_KEY` powers `/api/roast` and `/api/scores`.
-
-`BLOB_READ_WRITE_TOKEN` powers `/api/save` and saved roast pages at `/r/[id]`.
 
 ## Local Setup
 
@@ -51,13 +47,9 @@ Checklist:
 2. Click `Roast me ->`.
 3. The roast should stream into the output area.
 4. Four score cards should appear after streaming finishes.
-5. A share link should appear in the format `/r/[id]`.
-6. Open the share link in a new tab.
-7. The saved roast page should show the pitch, roast, scores, and a CTA back home.
+5. Toggle Nice mode and submit again to verify the tone changes.
 
 If the API key is missing, the UI will show the fallback error message after submit.
-
-If the Blob token is missing, roast generation can work but saving and permalinks will fail.
 
 ## Useful Commands
 
@@ -76,7 +68,6 @@ Set these Vercel environment variables before testing the full flow:
 
 ```text
 OPENAI_API_KEY
-BLOB_READ_WRITE_TOKEN
 ```
 
 After deployment, test the same checklist above on the `.vercel.app` URL.
